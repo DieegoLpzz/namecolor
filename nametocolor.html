@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Value Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #0d0d0d; /* Fixed background color */
+            color: white; /* White text color */
+        }
+        h1 {
+            font-family: 'Impact', sans-serif; /* Impact font for the title */
+        }
+        p {
+            font-weight: bold; /* Make the text bold */
+        }
+        .result-container {
+            display: inline-block;
+            margin: 10px;
+        }
+        .result-container label {
+            display: block;
+            font-weight: bold; /* Make the label text bold */
+            margin-bottom: 5px;
+        }
+        input, #result-box, #hex-box {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            width: 300px;
+            text-align: center;
+            border: 3px solid white; /* White border */
+            border-radius: 5px; /* Rounded corners for a cleaner look */
+            background-color: #333; /* Dark background for input fields */
+            color: white; /* White text color */
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s; /* Smooth background transition */
+        }
+        button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+        .color-display {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin-top: 10px;
+            border: 3px solid white; /* Border around the color square */
+            border-radius: 5px; /* Rounded corners for the color square */
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Value Calculator</h1>
+    <p>Enter three words:</p>
+    <input type="text" id="word1" placeholder="First word" maxlength="20">
+    <input type="text" id="word2" placeholder="Second word" maxlength="20">
+    <input type="text" id="word3" placeholder="Third word" maxlength="20">
+    <br>
+    <button onclick="calculateValues()">Calculate</button>
+    <br>
+    <div class="result-container">
+        <label for="result-box">RGB</label>
+        <input type="text" id="result-box" readonly placeholder="RGB Result">
+    </div>
+    <div class="result-container">
+        <label for="hex-box">HEX</label>
+        <input type="text" id="hex-box" readonly placeholder="Hex Code">
+    </div>
+    <div id="color-display" class="color-display"></div> <!-- Color display square -->
+
+    <script>
+        function calculateValues() {
+            const words = [
+                document.getElementById('word1').value.toLowerCase(),
+                document.getElementById('word2').value.toLowerCase(),
+                document.getElementById('word3').value.toLowerCase()
+            ];
+
+            let results = words.map(word => {
+                let sum = 0;
+                for (let i = 0; i < word.length; i++) {
+                    let char = word[i];
+                    let charCode = word.charCodeAt(i);
+
+                    if (char === 'ñ') {
+                        sum += 15; // Assign 15 to ñ
+                    } else if (charCode >= 97 && charCode <= 122) { // Check if it's a lowercase letter a-z
+                        sum += charCode - 96;
+                    }
+                }
+                return sum * 4;
+            });
+
+            results = results.map(result => {
+                while (result > 255) {
+                    result -= 256;
+                }
+                return result;
+            });
+
+            // Display the results as numbers separated by commas
+            const rgbString = results.join(', ');
+            document.getElementById('result-box').value = rgbString;
+
+            // Convert to hex and display the color
+            const hexColor = rgbToHex(results[0], results[1], results[2]);
+            document.getElementById('hex-box').value = hexColor;
+            document.getElementById('color-display').style.backgroundColor = hexColor;
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        }
+
+        function componentToHex(c) {
+            const hex = c.toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        }
+    </script>
+</body>
+</html>
